@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+  http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+-->
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.intel.greeter</groupId>
+    <artifactId>statefun-greeter-redis</artifactId>
+    <version>2.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <name>Stateful Functions Quickstart</name>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <statefun.version>2.1.0</statefun.version>
+        <java.version>1.8</java.version>
+        <auto-service.version>1.0-rc6</auto-service.version>
+        <spotbugs.version>3.1.12</spotbugs.version>
+        <spotless-maven-plugin.version>1.20.0</spotless-maven-plugin.version>
+        <auto-service.version>1.0-rc6</auto-service.version>
+        <protobuf.version>3.7.1</protobuf.version>
+        <unixsocket.version>2.3.2</unixsocket.version>
+        <protoc-jar-maven-plugin.version>3.11.1</protoc-jar-maven-plugin.version>
+        <flink.version>1.10.1</flink.version>
+        <scala.binary.version>2.11</scala.binary.version>
+        <protoc-jar-maven-plugin.version>3.11.1</protoc-jar-maven-plugin.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+    </properties>
+
+    <dependencies>
+        <!-- Stateful Functions SDK -->
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>statefun-sdk</artifactId>
+            <version>${statefun.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>statefun-sdk</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>statefun-kafka-io</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java</artifactId>
+            <version>3.8.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>statefun-flink-io</artifactId>
+            <version>2.1.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+            <version>3.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>statefun-flink-distribution</artifactId>
+            <version>2.1.0</version>
+        </dependency>
+
+        <!-- Add IO dependencies here -->
+        <!-- Example
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>statefun-kafka-io</artifactId>
+            <version>${statefun.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        -->
+    </dependencies>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>com.github.os72</groupId>
+                    <artifactId>protoc-jar-maven-plugin</artifactId>
+                    <version>${protoc-jar-maven-plugin.version}</version>
+                    <executions>
+                        <!-- Generate src/main/protobuf -->
+                        <execution>
+                            <id>generate-protobuf-sources</id>
+                            <phase>generate-sources</phase>
+                            <goals>
+                                <goal>run</goal>
+                            </goals>
+                            <configuration>
+                                <includeStdTypes>true</includeStdTypes>
+                                <protocVersion>${protobuf.version}</protocVersion>
+                                <cleanOutputFolder>true</cleanOutputFolder>
+                                <outputDirectory>${basedir}/target/generated-sources/protoc-jar</outputDirectory>
+                            </configuration>
+                        </execution>
+
+                        <!-- Generate src/test/protobuf -->
+                        <execution>
+                            <id>generate-protobuf-test-sources</id>
+                            <phase>generate-sources</phase>
+                            <goals>
+                                <goal>run</goal>
+                            </goals>
+                            <configuration>
+                                <includeStdTypes>true</includeStdTypes>
+                                <protocVersion>${protobuf.version}</protocVersion>
+                                <inputDirectories>
+                                    <include>src/test/protobuf</include>
+                                </inputDirectories>
+                                <outputTargets>
+                                    <outputTarget>
+                                        <type>descriptor</type>
+                                        <outputDirectory>${basedir}/target/test-classes</outputDirectory>
+                                    </outputTarget>
+                                    <outputTarget>
+                                        <type>java</type>
+                                        <outputDirectory>${basedir}/target/generated-test-sources/protoc-jar</outputDirectory>
+                                    </outputTarget>
+                                </outputTargets>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>com.github.os72</groupId>
+                <artifactId>protoc-jar-maven-plugin</artifactId>
+                <version>${protoc-jar-maven-plugin.version}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <excludePackageNames>com.intel.greeter.generated</excludePackageNames>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
